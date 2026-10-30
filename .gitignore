@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# stale pre-fix copy (physical removal pending @reviewer)
+trading/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Node (frontend, when it lands)
+node_modules/
+dist/
+build/
+
+# secrets
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/

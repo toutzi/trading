@@ -1,0 +1,153 @@
+components:
+  schemas:
+    ErrorCode:
+      enum:
+      - invalid_credentials
+      - unauthorized
+      - invalid_token
+      - validation_error
+      - not_found
+      - internal_error
+      title: ErrorCode
+      type: string
+    ErrorDetail:
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          title: Message
+          type: string
+      required:
+      - code
+      - message
+      title: ErrorDetail
+      type: object
+    ErrorEnvelope:
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+      required:
+      - error
+      title: ErrorEnvelope
+      type: object
+    LoginRequest:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+        password:
+          title: Password
+          type: string
+      required:
+      - email
+      - password
+      title: LoginRequest
+      type: object
+    TokenResponse:
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+        expires_in:
+          title: Expires In
+          type: integer
+        token_type:
+          const: bearer
+          default: bearer
+          title: Token Type
+          type: string
+      required:
+      - access_token
+      - expires_in
+      title: TokenResponse
+      type: object
+    UserResponse:
+      properties:
+        created_at:
+          title: Created At
+          type: string
+        email:
+          format: email
+          title: Email
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      required:
+      - id
+      - email
+      - name
+      - created_at
+      title: UserResponse
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+info:
+  description: v1 auth + profile contract
+  title: Auth API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /auth/login:
+    post:
+      operationId: login_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+          description: Successful Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Invalid credentials
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Validation error
+      security: []
+      summary: Login
+      tags:
+      - auth
+  /me:
+    get:
+      operationId: read_me_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+          description: Successful Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+          description: Missing or invalid token
+      summary: Read Me
+      tags:
+      - me
+security:
+- bearerAuth: []
